@@ -34,6 +34,8 @@ public class SignUpDTO {
 
     private EGender gender;
 
+    private ERole role;
+
     @ValidPassword
     private  String password;
 }

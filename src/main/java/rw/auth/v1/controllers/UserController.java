@@ -17,6 +17,7 @@ import rw.auth.v1.dtos.*;
 import rw.auth.v1.enums.EGender;
 import rw.auth.v1.enums.ERole;
 import rw.auth.v1.enums.EUserStatus;
+import rw.auth.v1.exceptions.BadRequestException;
 import rw.auth.v1.fileHandling.File;
 import rw.auth.v1.fileHandling.FileStorageService;
 import rw.auth.v1.models.Role;
@@ -62,11 +63,14 @@ public class UserController {
 
     @PostMapping(path = "/register")
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody SignUpDTO dto) {
+        if(dto.getRole() == ERole.ADMIN){
+            throw new BadRequestException("You can not register yourself as an Admin");
+        }
 
         User user = new User();
 
         String encodedPassword = bCryptPasswordEncoder.encode(dto.getPassword());
-        Role role = roleService.findByName(ERole.STANDARD);
+        Role role = roleService.findByName(dto.getRole());
 
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
@@ -103,7 +107,7 @@ public class UserController {
         return Formatter.done();
     }
 
-    @GetMapping("/load-file/{filename:.+}")
+    @GetMapping("/files/load-file/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> loadProfileImage(@PathVariable String filename) {
 

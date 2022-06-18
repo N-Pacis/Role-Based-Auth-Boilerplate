@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import rw.auth.v1.dtos.ChangePasswordDTO;
+import rw.auth.v1.enums.ERole;
 import rw.auth.v1.enums.EUserStatus;
 import rw.auth.v1.exceptions.BadRequestException;
 import rw.auth.v1.exceptions.ResourceNotFoundException;
@@ -126,6 +127,9 @@ public class UserServiceImpl implements IUserService {
                 case STANDARD:
                     profile = theUser;
                     break;
+                case ADMIN:
+                    profile = theUser;
+                    break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + role.get().getName());
             }
@@ -157,14 +161,24 @@ public class UserServiceImpl implements IUserService {
 
         if (user.getStatus() != EUserStatus.WAIT_EMAIL_VERIFICATION)
             throw new BadRequestException("Your account is " + user.getStatus().toString().toLowerCase(Locale.ROOT));
-
-        user.setStatus(EUserStatus.ACTIVE);
+        Set<Role> roles = user.getRoles();
+        for(Role role:roles){
+            Role roleFromBackend = roleService.findByName(ERole.ADMIN);
+            if(role.getName() == roleFromBackend.getName()){
+                user.setStatus(EUserStatus.ACTIVE);
+            }
+            else{
+                user.setStatus(EUserStatus.PENDING);
+            }
+        }
 
         userRepository.save(user);
 
         mailService.sendEmailVerifiedMail(user);
-        mailService.sendWelcomeEmailMail(user);
-        List<User> usersToNotify = new ArrayList<>();
+        if(user.getStatus() == EUserStatus.ACTIVE){
+            mailService.sendWelcomeEmailMail(user);
+        }
+
     }
 
     @Override

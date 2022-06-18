@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class MailService {
+
     private final JavaMailSender mailSender;
 
     private final SpringTemplateEngine templateEngine;
@@ -28,9 +29,6 @@ public class MailService {
 
     @Value("${swagger.app_name}")
     private String appName;
-
-    @Value("${client.host}")
-    private String clientHost;
 
     @Autowired
     public MailService(SpringTemplateEngine templateEngine, JavaMailSender mailSender) {
