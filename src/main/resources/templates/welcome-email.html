@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Welcome Email</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .template-container {
+            background: linear-gradient(rgb(218, 217, 217),#cececeef);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100%;
+            width: 100%;
+        }
+
+        .template-container .content {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            min-width: 310px;
+            max-width: 100%;
+            min-height: 300px;
+            margin: 0 auto;
+        }
+
+        .template-container .content h1.title {
+            font-family: "Lato", sans-serif;
+            font-size: 18px;
+            color: #19ac2c;
+            text-align: center;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .template-container .content>p {
+            margin: 20px 0;
+            font-family: "Lato", sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            color: #8e8d8d;
+        }
+
+
+        @media screen and (min-width: 992px) {
+            .template-container .content {
+                min-width: 400px;
+                max-width: 500px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="template-container">
+        <div class="content">
+            <h1 class="title">A warm welcome to you</h1>
+            <p>Dear <span th:text="${name}"></span>,</p>
+            <p>
+                Congratulations! We have successfully created an account for you in <span th:text="${app_name}"></span>.
+            </p>
+            <p>
+                You may be wondering where to get started. We got you here. All you
+                have to do is to Sign In in the system.
+
+            </p>
+            <p>
+                Regards
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
