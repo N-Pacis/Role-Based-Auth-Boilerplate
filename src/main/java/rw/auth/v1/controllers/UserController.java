@@ -61,6 +61,22 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse(true, userService.getLoggedInUser()));
     }
 
+    public ResponseEntity<ApiResponse> search(
+            @RequestParam(value = "page", defaultValue = Constants.DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(value = "limit", defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit,
+            @RequestParam(value = "name", required = false, defaultValue = "") String name,
+            @RequestParam(value = "status") EUserStatus status,
+            @RequestParam(value = "gender", required = false) EGender gender,
+            @RequestParam(value = "role", required = false) ERole role
+    ){
+        Pageable pageable = PageRequest.of(page,limit, Sort.Direction.ASC,"id");
+        if(role != null){
+            Role savedRole = roleService.findByName(role);
+            return ResponseEntity.ok(ApiResponse.success(userService.search(savedRole,status,name,gender,pageable)));
+        }
+        return ResponseEntity.ok(ApiResponse.success(userService.search(status,name,gender,pageable)));
+    }
+
     @PostMapping(path = "/register")
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody SignUpDTO dto) {
         if(dto.getRole() == ERole.ADMIN){
@@ -116,5 +132,28 @@ public class UserController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);
+    }
+
+    @PutMapping("/{id/approve")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse> approveAUser(@PathVariable UUID id){
+        User user = userService.findById(id);
+        userService.approve(user);
+        return ResponseEntity.ok(ApiResponse.success("User approved successfully"));
+    }
+
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse> rejectAUser(@PathVariable UUID id,@Valid @RequestBody RejectUserDto dto){
+        User user = userService.findById(id);
+        userService.reject(user,dto.getRejectionMessage());
+        return ResponseEntity.ok(ApiResponse.success("User rejected successfully"));
+    }
+
+    public ResponseEntity<ApiResponse> deactivateAccount(@PathVariable UUID id){
+        User user = userService.findById(id);
+        userService.deActivate(user);
+
+        return ResponseEntity.ok(ApiResponse.success("Deactivated successfully"));
     }
 }

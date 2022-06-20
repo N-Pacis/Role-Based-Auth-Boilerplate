@@ -17,6 +17,10 @@ import java.util.UUID;
 
 public interface IUserService {
 
+    Page<User> search(Role role,EUserStatus status,String name,EGender gender,Pageable pageable);
+
+    Page<User> search(EUserStatus status,String name,EGender gender,Pageable pageable);
+
     User findById(UUID id);
 
     User create(User user);
@@ -46,4 +50,10 @@ public interface IUserService {
     boolean isCodeValid(String email, String activationCode);
 
     void changePassword(ChangePasswordDTO dto);
+
+    User approve(User user);
+
+    User reject(User user,String rejectionMessage);
+
+    void deActivate(User user);
 }
